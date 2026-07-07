@@ -32,7 +32,8 @@
         AdController.preload().then(() => {
             btn.disabled = false;
             btn.innerText = "Смотреть рекламу";
-        }).catch(() => {
+        }).catch((err) => {
+            console.error(err);
             btn.innerText = "Реклама недоступна";
         });
 
@@ -46,7 +47,7 @@
                     tg.showAlert("Вы пропустили рекламу.");
                 }
             }).catch((err) => {
-                tg.showAlert("Ошибка: " + err);
+                tg.showAlert("Ошибка при показе");
             });
         });
     </script>
