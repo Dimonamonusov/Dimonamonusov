@@ -22,13 +22,18 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        // Инициализация AdsGram с твоим ID
+        
         const AdController = window.AdsGram.init({ blockId: "37661" });
 
         document.getElementById('watchAdBtn').addEventListener('click', () => {
             AdController.show().then((result) => {
-                tg.showAlert("Реклама просмотрена!");
-                // Здесь будет логика начисления монет
+                if (result.done) {
+                    tg.showAlert("Реклама просмотрена! Награда зачислена.");
+                    let balanceEl = document.getElementById('balance');
+                    balanceEl.innerText = (parseFloat(balanceEl.innerText) + 0.01).toFixed(2);
+                } else {
+                    tg.showAlert("Вы пропустили рекламу, награда не начислена.");
+                }
             }).catch((err) => {
                 tg.showAlert("Ошибка или реклама закрыта");
             });
