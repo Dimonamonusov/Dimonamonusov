@@ -10,32 +10,43 @@
         body { margin: 0; background-color: #1a0b2e; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
         .balance-card { background: #3d1466; border-radius: 24px; padding: 30px; margin-bottom: 40px; text-align: center; }
         .btn-earn { background: #7c3aed; color: white; border: none; border-radius: 18px; padding: 20px 40px; font-size: 18px; cursor: pointer; }
+        .btn-earn:disabled { background: #4a4a4a; cursor: not-allowed; }
     </style>
 </head>
 <body>
     <div class="balance-card">
         <div>Ваш Баланс</div>
-        <div id="balance">0</div>
+        <div id="balance">0.0000</div>
     </div>
-    <button class="btn-earn" id="watchAdBtn">Смотреть рекламу</button>
+    <button class="btn-earn" id="watchAdBtn">Загрузка...</button>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
         
         const AdController = window.AdsGram.init({ blockId: "37661" });
+        const btn = document.getElementById('watchAdBtn');
 
-        document.getElementById('watchAdBtn').addEventListener('click', () => {
+        btn.disabled = true;
+
+        AdController.preload().then(() => {
+            btn.disabled = false;
+            btn.innerText = "Смотреть рекламу";
+        }).catch(() => {
+            btn.innerText = "Реклама недоступна";
+        });
+
+        btn.addEventListener('click', () => {
             AdController.show().then((result) => {
                 if (result.done) {
                     tg.showAlert("Реклама просмотрена! Награда зачислена.");
                     let balanceEl = document.getElementById('balance');
-                    balanceEl.innerText = (parseFloat(balanceEl.innerText) + 0.01).toFixed(2);
+                    balanceEl.innerText = (parseFloat(balanceEl.innerText) + 0.01).toFixed(4);
                 } else {
-                    tg.showAlert("Вы пропустили рекламу, награда не начислена.");
+                    tg.showAlert("Вы пропустили рекламу.");
                 }
             }).catch((err) => {
-                tg.showAlert("Ошибка или реклама закрыта");
+                tg.showAlert("Ошибка: " + err);
             });
         });
     </script>
