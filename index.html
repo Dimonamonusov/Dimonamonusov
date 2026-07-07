@@ -18,25 +18,26 @@
         <div>Ваш Баланс</div>
         <div id="balance">0.0000</div>
     </div>
-    <button class="btn-earn" id="watchAdBtn">Загрузка...</button>
+    <button class="btn-earn" id="watchAdBtn" disabled>Загрузка...</button>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
         
+        // Инициализация AdsGram
         const AdController = window.AdsGram.init({ blockId: "37661" });
         const btn = document.getElementById('watchAdBtn');
 
-        btn.disabled = true;
-
+        // Предварительная загрузка рекламы
         AdController.preload().then(() => {
             btn.disabled = false;
             btn.innerText = "Смотреть рекламу";
         }).catch((err) => {
-            console.error(err);
             btn.innerText = "Реклама недоступна";
+            console.error("AdsGram Error:", err);
         });
 
+        // Обработка клика
         btn.addEventListener('click', () => {
             AdController.show().then((result) => {
                 if (result.done) {
@@ -44,10 +45,10 @@
                     let balanceEl = document.getElementById('balance');
                     balanceEl.innerText = (parseFloat(balanceEl.innerText) + 0.01).toFixed(4);
                 } else {
-                    tg.showAlert("Вы пропустили рекламу.");
+                    tg.showAlert("Вы пропустили рекламу, награда не начислена.");
                 }
             }).catch((err) => {
-                tg.showAlert("Ошибка при показе");
+                tg.showAlert("Ошибка: " + err);
             });
         });
     </script>
